@@ -61,34 +61,12 @@
 /* --- 桌面视图 --- */
 .desktop-view {
     width: 100%; height: 100%; display: flex; flex-direction: column;
-    padding: calc(env(safe-area-inset-top) + 10px) 20px env(safe-area-inset-bottom) 20px; /* 适配刘海和底部安全区 */
+    padding: calc(env(safe-area-inset-top) + 20px) 20px 20px 20px; /* 增加顶部间距 */
     gap: 20px;
     transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s;
     transform: scale(1.05); /* 稍微放大整体视图 */
 }
 .view-hidden { transform: scale(0.97); opacity: 0; pointer-events: none; }
-        
-/* 桌面状态栏 */
-.status-bar { 
-    height: 44px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    font-size: 14px; 
-    font-weight: 600; 
-    color: #fff; 
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3); 
-    padding: 0 4px; 
-    flex-shrink: 0; 
-    position: absolute; /* 改为绝对定位 */
-    top: env(safe-area-inset-top); /* 精准定位到安全区顶部 */
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 10;
-    padding-left: calc(env(safe-area-inset-left) + 20px);
-    padding-right: calc(env(safe-area-inset-right) + 20px);
-}
 
 /* Widget CSS */
 .widget-large { width: 100%; aspect-ratio: 2/1; background: var(--bg-blur); backdrop-filter: blur(40px) saturate(180%); border-radius: var(--radius-outer); border: 1px solid rgba(255,255,255,0.4); padding: 12px; display: flex; gap: 12px; overflow: hidden; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -120,7 +98,7 @@
 /* Dock */
 .dock-container { 
     position: absolute; 
-    bottom: calc(env(safe-area-inset-bottom) + 10px); /* 适配底部安全区 */
+    bottom: 20px; /* 固定在底部20px，忽略安全区 */
     left: 20px; 
     right: 20px; 
     height: 90px; 
@@ -149,8 +127,8 @@
     z-index: 200;
     display: flex; flex-direction: column;
     
-    /* 适配刘海和底部安全区 */
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    /* 统一Padding，顶部适配，底部忽略 */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) 20px env(safe-area-inset-left);
     
     opacity: 0; pointer-events: none;
     transform: scale(1.1);

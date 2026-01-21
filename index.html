@@ -24,14 +24,6 @@
     <div class="wallpaper-layer" :style="{ backgroundImage: `url(${wallpaperUrl})` }"></div>
     <div class="settings-bg"></div>
 
-    <!-- 状态栏 -->
-    <div class="status-bar" v-if="currentView === 'desktop'">
-        <span>{{ statusTime }}</span>
-        <div style="display:flex; gap:6px; align-items:center;">
-            <i class="fas fa-signal"></i><i class="fas fa-wifi"></i><i class="fas fa-battery-full"></i>
-        </div>
-    </div>
-
     <!-- 1. 桌面 -->
     <div class="desktop-view" :class="{ 'view-hidden': currentView !== 'desktop' }">
         <div class="widget-large">

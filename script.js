@@ -1,4 +1,4 @@
-const { createApp, ref, reactive, onMounted } = Vue;
+const { createApp, ref, reactive, onMounted, watch } = Vue;
 
 createApp({
     setup() {
@@ -15,6 +15,9 @@ createApp({
         const standeeInput = ref(null);
         const wallpaperInput = ref(null);
 
+        // --- 数据持久化 ---
+        const STORAGE_KEY = 'ios26-liquid-settings';
+
         // API Config
         const apiConfig = reactive({
             endpoint: '',
@@ -26,9 +29,7 @@ createApp({
         const loadingModels = ref(false);
         
         // 预设
-        const presets = ref([
-            { name: 'Default Local', endpoint: 'http://localhost:1234/v1', key: 'lm-studio', model: 'local-model', temperature: 0.7 }
-        ]);
+        const presets = ref([]);
         const selectedPresetId = ref('');
         const showSaveModal = ref(false); const showDeleteModal = ref(false); const newPresetName = ref('');
 
@@ -70,7 +71,53 @@ createApp({
             selectedPresetId.value = ''; apiConfig.endpoint = ''; apiConfig.key = ''; apiConfig.model = ''; apiConfig.temperature = 0.7;
             showDeleteModal.value = false;
         };
-        const saveAndExit = () => { switchView('desktop'); };
+        const saveAndExit = () => { 
+            saveState(); // 保存并退出
+            switchView('desktop'); 
+        };
+
+        // --- 数据持久化核心函数 ---
+        const saveState = () => {
+            try {
+                const state = {
+                    apiConfig: apiConfig,
+                    presets: presets.value,
+                    wallpaperUrl: wallpaperUrl.value,
+                    imgUrl: imgUrl.value,
+                    standeeUrl: standeeUrl.value,
+                    selectedPresetId: selectedPresetId.value
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                console.log("状态已保存。");
+            } catch (e) {
+                console.error("保存状态失败:", e);
+            }
+        };
+
+        const loadState = () => {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    Object.assign(apiConfig, state.apiConfig);
+                    presets.value = state.presets || [];
+                    wallpaperUrl.value = state.wallpaperUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
+                    imgUrl.value = state.imgUrl || 'https://images.unsplash.com/photo-1517423568366-028c4974d016?q=80&w=2670&auto=format&fit=crop';
+                    standeeUrl.value = state.standeeUrl || 'https://cdn-icons-png.flaticon.com/512/9440/9440474.png';
+                    selectedPresetId.value = state.selectedPresetId || '';
+                    console.log("状态已加载。");
+                } else {
+                    // 如果没有保存的状态，设置一个默认预设
+                    presets.value = [{ name: 'Default Local', endpoint: 'http://localhost:1234/v1', key: 'lm-studio', model: 'local-model', temperature: 0.7 }];
+                }
+            } catch (e) {
+                console.error("加载状态失败:", e);
+            }
+        };
+
+        // 监听所有需要持久化的数据
+        watch([apiConfig, presets, wallpaperUrl, imgUrl, standeeUrl, selectedPresetId], saveState, { deep: true });
+
 
         // 基础功能
         const updateTime = () => {
@@ -87,6 +134,7 @@ createApp({
         const spinAction = () => { if(!spinning.value){spinning.value=true;setTimeout(()=>spinning.value=false,1500);} };
         
         onMounted(() => {
+            loadState(); // 应用启动时加载数据
             updateTime(); setInterval(updateTime, 1000);
             if('getBattery' in navigator) navigator.getBattery().then(b=>{const u=()=>{batteryLevel.value=Math.floor(b.level*100);charging.value=b.charging};u();b.addEventListener('levelchange',u);b.addEventListener('chargingchange',u);});
         });
