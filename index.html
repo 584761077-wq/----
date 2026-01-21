@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body :class="{ 'settings-active': currentView === 'settings' || currentView === 'appearance' }">
+<body :class="{ 'settings-active': currentView === 'settings' || currentView === 'appearance' || currentView === 'chat' }">
 
 <div id="app">
     
@@ -50,7 +50,7 @@
     <div class="dock-container" :class="{ 'dock-hidden': currentView !== 'desktop' }">
         <div class="app-icon icon-settings" @click="switchView('settings')"><i class="fas fa-cog"></i></div>
         <div class="app-icon icon-appearance" @click="switchView('appearance')"><i class="fas fa-palette"></i></div>
-        <div class="app-icon icon-chat"><i class="fas fa-comment"></i></div>
+        <div class="app-icon icon-chat" @click="switchView('chat')"><i class="fas fa-comment"></i></div>
     </div>
 
     <!-- 3. 极致液态设置 -->
@@ -139,8 +139,54 @@
         </div>
     </div>
 
+    <!-- 5. Chat App -->
+    <div class="settings-view" :class="{ 'active': currentView === 'chat' }">
+        <div class="nav-bar">
+            <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i></div>
+            <span>消息</span>
+            <div style="width: 60px;"></div> <!-- 占位符 -->
+        </div>
+        <div class="settings-content">
+            <!-- 聊天列表 -->
+            <div v-if="currentChatTab === 'chat'">
+                <!-- 空的聊天列表 -->
+            </div>
+            <!-- 通讯录 -->
+            <div v-if="currentChatTab === 'contacts'">
+                <div class="contact-actions">
+                    <div class="capsule-btn" @click="showAddRoleModal = true"><i class="fas fa-user-plus"></i></div>
+                    <div class="capsule-btn"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="liquid-card contact-card" v-for="contact in contacts" :key="contact.id">
+                    <div class="contact-avatar"></div>
+                    <div class="contact-info">
+                        <div class="contact-name">{{ contact.name }}</div>
+                        <div class="contact-signature">{{ contact.signature }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Chat App 内部 Dock -->
+        <div class="chat-dock">
+            <div class="chat-dock-item" :class="{ active: currentChatTab === 'chat' }" @click="switchChatTab('chat')"><i class="fas fa-comment-dots"></i></div>
+            <div class="chat-dock-item" :class="{ active: currentChatTab === 'contacts' }" @click="switchChatTab('contacts')"><i class="fas fa-address-book"></i></div>
+            <div class="chat-dock-item" :class="{ active: currentChatTab === 'discover' }" @click="switchChatTab('discover')"><i class="fas fa-compass"></i></div>
+            <div class="chat-dock-item" :class="{ active: currentChatTab === 'me' }" @click="switchChatTab('me')"><i class="fas fa-user"></i></div>
+        </div>
+    </div>
+
 
     <!-- 弹窗 -->
+    <div class="modal-overlay" :class="{ 'show': showAddRoleModal }">
+        <div class="modal-box">
+            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">添加新角色</div>
+            <input type="text" class="glass-input" v-model="newRoleName" placeholder="输入角色名字..." style="margin-bottom:10px;">
+            <div class="modal-actions">
+                <div class="glass-btn" @click="showAddRoleModal = false">取消</div>
+                <div class="glass-btn" style="background: rgba(255,255,255,0.3);" @click="confirmAddRole">完成</div>
+            </div>
+        </div>
+    </div>
     <div class="modal-overlay" :class="{ 'show': showSaveModal }">
         <div class="modal-box">
             <div class="modal-title" style="margin-bottom:15px; font-weight:600;">命名预设</div>

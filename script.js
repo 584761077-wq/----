@@ -18,6 +18,13 @@ createApp({
         // --- 数据持久化 ---
         const STORAGE_KEY = 'ios26-liquid-settings';
 
+        // Chat App State
+        const currentChatTab = ref('chat');
+        const contacts = ref([]);
+        const showAddRoleModal = ref(false);
+        const newRoleName = ref('');
+        const switchChatTab = (tab) => currentChatTab.value = tab;
+
         // API Config
         const apiConfig = reactive({
             endpoint: '',
@@ -76,6 +83,17 @@ createApp({
             switchView('desktop'); 
         };
 
+        const confirmAddRole = () => {
+            if (!newRoleName.value.trim()) return;
+            contacts.value.push({
+                id: Date.now(),
+                name: newRoleName.value,
+                signature: '这个人很懒，什么都没留下...'
+            });
+            newRoleName.value = '';
+            showAddRoleModal.value = false;
+        };
+
         // --- 数据持久化核心函数 ---
         const saveState = () => {
             try {
@@ -85,7 +103,8 @@ createApp({
                     wallpaperUrl: wallpaperUrl.value,
                     imgUrl: imgUrl.value,
                     standeeUrl: standeeUrl.value,
-                    selectedPresetId: selectedPresetId.value
+                    selectedPresetId: selectedPresetId.value,
+                    contacts: contacts.value
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
                 console.log("状态已保存。");
@@ -105,6 +124,7 @@ createApp({
                     imgUrl.value = state.imgUrl || 'https://images.unsplash.com/photo-1517423568366-028c4974d016?q=80&w=2670&auto=format&fit=crop';
                     standeeUrl.value = state.standeeUrl || 'https://cdn-icons-png.flaticon.com/512/9440/9440474.png';
                     selectedPresetId.value = state.selectedPresetId || '';
+                    contacts.value = state.contacts || [];
                     console.log("状态已加载。");
                 } else {
                     // 如果没有保存的状态，设置一个默认预设
@@ -116,7 +136,7 @@ createApp({
         };
 
         // 监听所有需要持久化的数据
-        watch([apiConfig, presets, wallpaperUrl, imgUrl, standeeUrl, selectedPresetId], saveState, { deep: true });
+        watch([apiConfig, presets, wallpaperUrl, imgUrl, standeeUrl, selectedPresetId, contacts], saveState, { deep: true });
 
 
         // 基础功能
@@ -144,7 +164,9 @@ createApp({
             wallpaperUrl, wallpaperInput, uploadWallpaper, handleWallpaperFile,
             imgUrl, fileInput, uploadImage, handleFile, standeeUrl, standeeInput, uploadStandee, handleStandeeFile, spinning, spinAction,
             apiConfig, modelList, loadingModels, fetchModels, presets, selectedPresetId, loadPreset,
-            showSaveModal, newPresetName, openSaveModal, confirmSavePreset, showDeleteModal, openDeleteModal, confirmDeletePreset, saveAndExit
+            showSaveModal, newPresetName, openSaveModal, confirmSavePreset, showDeleteModal, openDeleteModal, confirmDeletePreset, saveAndExit,
+            // Chat App
+            currentChatTab, switchChatTab, contacts, showAddRoleModal, newRoleName, confirmAddRole
         };
     }
 }).mount('#app');

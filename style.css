@@ -305,3 +305,116 @@
     font-size: 14px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
+
+/* --- Chat App --- */
+.chat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+}
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background-color: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+}
+.chat-info {
+    flex-grow: 1;
+}
+.chat-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #fff;
+}
+.chat-preview {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+}
+
+.chat-dock {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    height: 70px;
+    padding: 0 30px;
+    background: rgba(245, 245, 245, 0.35);
+    backdrop-filter: blur(50px) saturate(120%);
+    border-radius: 35px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+.chat-dock-item {
+    font-size: 24px;
+    color: rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.chat-dock-item.active {
+    color: #000;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.capsule-btn {
+    flex: 1;
+    height: 50px;
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.capsule-btn:active {
+    background: rgba(255,255,255,0.2);
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+}
+
+.contact-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background-color: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+}
+
+.contact-info {
+    flex-grow: 1;
+}
+
+.contact-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #fff;
+}
+
+.contact-signature {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+    font-style: italic;
+}
