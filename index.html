@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="iOS 26">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+
+    <title>iOS 26 Liquid Real API</title>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body :class="{ 'settings-active': currentView === 'settings' || currentView === 'appearance' }">
+
+<div id="app">
+    
+    <div class="wallpaper-layer" :style="{ backgroundImage: `url(${wallpaperUrl})` }"></div>
+    <div class="settings-bg"></div>
+
+    <!-- 1. 桌面 -->
+    <div class="desktop-view" :class="{ 'view-hidden': currentView !== 'desktop' }">
+        <div class="status-bar">
+            <span>{{ statusTime }}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <i class="fas fa-signal"></i><i class="fas fa-wifi"></i><i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+        <div class="widget-large">
+            <div class="left-matrix">
+                <div class="module mod-time"><div class="time-display">{{ hour }}:{{ minute }}</div><div class="date-display">{{ fullDate }}</div></div>
+                <div class="module mod-hardware"><i class="fas fa-cat"></i><span>喵~</span></div>
+                <div class="module mod-storage"><div class="ring-container" :style="{ '--pct': storagePct + '%' }"><div class="ring-inner">存储</div></div></div>
+                <div class="module mod-battery"><div class="liquid" :style="{ height: batteryLevel + '%' }"></div><div class="battery-info"><i class="fas fa-bolt" v-if="charging"></i><span>{{ batteryLevel }}</span></div></div>
+            </div>
+            <div class="right-visual" @click="uploadImage"><img v-if="imgUrl" :src="imgUrl"><div v-else class="placeholder"><i class="fas fa-image"></i></div><input type="file" ref="fileInput" accept="image/*" style="display:none" @change="handleFile"></div>
+        </div>
+        <div class="widget-row">
+            <div class="widget-small standee-widget">
+                <div class="hidden-trigger" @click.stop="uploadStandee"></div>
+                <template v-if="standeeUrl"><img :src="standeeUrl" class="standee-img" :class="{ 'is-spinning': spinning }" @click="spinAction"><div class="base-slot"></div><div class="metal-base"></div></template>
+                <div v-else class="standee-placeholder" @click="uploadStandee"><i class="fas fa-ghost" style="font-size:24px; margin-bottom:5px;"></i><span>上传PNG</span></div>
+                <input type="file" ref="standeeInput" accept="image/png, image/webp" style="display:none" @change="handleStandeeFile">
+            </div>
+            <div class="widget-small"></div>
+        </div>
+    </div>
+
+    <!-- 2. Dock -->
+    <div class="dock-container" :class="{ 'dock-hidden': currentView !== 'desktop' }">
+        <div class="app-icon icon-settings" @click="switchView('settings')"><i class="fas fa-cog"></i></div>
+        <div class="app-icon icon-appearance" @click="switchView('appearance')"><i class="fas fa-palette"></i></div>
+        <div class="app-icon icon-chat"><i class="fas fa-comment"></i></div>
+    </div>
+
+    <!-- 3. 极致液态设置 -->
+    <div class="settings-view" :class="{ 'active': currentView === 'settings' }">
+        <div class="nav-bar">
+            <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i> 返回</div>
+            <span>API 设置</span>
+            <!-- 顶部白色玻璃保存按钮 -->
+            <div class="glass-btn-top" @click="saveAndExit">保存</div>
+        </div>
+
+        <div class="settings-content">
+            <div class="liquid-card">
+                <div class="card-title">API Connection</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Endpoint URL</label>
+                    <input type="text" class="glass-input" v-model="apiConfig.endpoint" placeholder="https://api.openai.com/v1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="glass-input" v-model="apiConfig.key" placeholder="sk-...">
+                </div>
+
+                <div class="row-group">
+                    <div class="glass-btn" @click="fetchModels">
+                        <i class="fas fa-sync-alt" :class="{'fa-spin': loadingModels}" style="margin-right:6px"></i> 
+                        {{ loadingModels ? '连接中...' : '拉取模型' }}
+                    </div>
+                    <select class="glass-select" v-model="apiConfig.model" style="color:#000;">
+                        <option value="" disabled>选择模型...</option>
+                        <option v-for="m in modelList" :key="m" :value="m">{{ m }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">预设管理</label>
+                    <select class="glass-select" v-model="selectedPresetId" @change="loadPreset" style="width:100%; color:#000;">
+                        <option value="" disabled>选择已保存的预设...</option>
+                        <option v-for="(p, index) in presets" :key="index" :value="index">{{ p.name }}</option>
+                    </select>
+                    
+                    <!-- 双列矩形按钮 -->
+                    <div class="preset-action-row">
+                        <div class="rect-btn btn-white" @click="openSaveModal">
+                            <i class="fas fa-save" style="margin-right:6px"></i> 保存
+                        </div>
+                        <div class="rect-btn btn-gray" @click="openDeleteModal">
+                            <i class="fas fa-trash" style="margin-right:6px"></i> 删除
+                        </div>
+                    </div>
+                    
+                    <!-- 温度滑块 (中文) -->
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span>温度</span>
+                            <span>{{ apiConfig.temperature }}</span>
+                        </div>
+                        <input type="range" class="glass-range" min="0" max="2" step="0.1" v-model="apiConfig.temperature">
+                    </div>
+                </div>
+            </div>
+
+            <div class="liquid-card" style="opacity: 0.8; display:flex; justify-content:center; align-items:center;">
+                 <span style="font-size:12px; color:rgba(255,255,255,0.6);">Design by Liquid Glass UI</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 外观设置 -->
+    <div class="settings-view" :class="{ 'active': currentView === 'appearance' }">
+        <div class="nav-bar">
+            <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i> 返回</div>
+            <span>外观</span>
+            <div style="width: 60px;"></div> <!-- 占位符保持标题居中 -->
+        </div>
+        <div class="settings-content">
+            <div class="liquid-card">
+                <div class="card-title">桌面壁纸</div>
+                <div class="wallpaper-preview" :style="{ backgroundImage: `url(${wallpaperUrl})` }" @click="uploadWallpaper">
+                    <div v-if="!wallpaperUrl" class="wallpaper-preview-placeholder">点击更换壁纸</div>
+                </div>
+                <input type="file" ref="wallpaperInput" accept="image/*" style="display:none" @change="handleWallpaperFile">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" :class="{ 'show': showSaveModal }">
+        <div class="modal-box">
+            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">命名预设</div>
+            <input type="text" class="glass-input" v-model="newPresetName" placeholder="例如：GPT-4 Official" style="margin-bottom:10px;">
+            <div class="modal-actions">
+                <div class="glass-btn" @click="showSaveModal = false">取消</div>
+                <div class="glass-btn" style="background: rgba(255,255,255,0.3);" @click="confirmSavePreset">确认</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" :class="{ 'show': showDeleteModal }">
+        <div class="modal-box">
+            <div class="modal-title" style="margin-bottom:10px; font-weight:600;">确认删除</div>
+            <div style="font-size:13px; color:#ccc; margin-bottom:20px;">{{ presets[selectedPresetId]?.name }}</div>
+            <div class="modal-actions">
+                <div class="glass-btn" @click="showDeleteModal = false">取消</div>
+                <div class="glass-btn" style="background: rgba(255,59,48,0.4);" @click="confirmDeletePreset">删除</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
