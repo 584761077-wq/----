@@ -318,14 +318,13 @@ createApp({
         };
 
         // 处理头像文件上传
-        const handleAvatarFile = (e) => {
+        const handleAvatarFile = async (e) => {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    avatarPreviewUrl.value = event.target.result;
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+            try {
+                avatarPreviewUrl.value = await imageFileToDataUrl(file, { maxSize: 256, mimeType: 'image/webp', quality: 0.9 });
+            } catch (err) {
+                console.error('Avatar load failed', err);
             }
         };
 
@@ -477,6 +476,43 @@ createApp({
             loadUserPreset();
         };
 
+        // Image helper: downscale to keep localStorage usage small
+        const imageFileToDataUrl = (file, options = {}) => {
+            const { maxSize = 1200, mimeType = 'image/webp', quality = 0.9 } = options;
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(reader.error);
+                reader.onload = () => {
+                    const original = reader.result;
+                    const img = new Image();
+                    img.onload = () => {
+                        const maxDim = Math.max(img.width, img.height);
+                        const scale = maxDim > maxSize ? maxSize / maxDim : 1;
+                        const targetW = Math.max(1, Math.round(img.width * scale));
+                        const targetH = Math.max(1, Math.round(img.height * scale));
+                        if (!scale || !Number.isFinite(scale)) { resolve(original); return; }
+                        if (scale === 1 && file.type === mimeType) { resolve(original); return; }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetW;
+                        canvas.height = targetH;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) { resolve(original); return; }
+                        ctx.drawImage(img, 0, 0, targetW, targetH);
+                        let dataUrl = '';
+                        try {
+                            dataUrl = canvas.toDataURL(mimeType, quality);
+                        } catch (err) {
+                            dataUrl = canvas.toDataURL('image/png');
+                        }
+                        resolve(dataUrl || original);
+                    };
+                    img.onerror = () => resolve(original);
+                    img.src = original;
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
         // 基础功能
         const updateTime = () => {
             const now = new Date(); hour.value = String(now.getHours()).padStart(2,0); minute.value = String(now.getMinutes()).padStart(2,0);
@@ -484,13 +520,49 @@ createApp({
             fullDate.value = now.toLocaleDateString('en-US', {weekday:'long',day:'numeric',month:'short'}).toUpperCase();
         };
         const uploadImage = () => fileInput.value.click();
-        const handleFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>imgUrl.value=v.target.result;r.readAsDataURL(f);} };
+        const handleFile = async (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            try {
+                imgUrl.value = await imageFileToDataUrl(f, { maxSize: 1200, mimeType: 'image/jpeg', quality: 0.9 });
+                saveState();
+            } catch (err) {
+                console.error('Image load failed', err);
+            }
+        };
         const uploadStandee = () => standeeInput.value.click();
-        const handleStandeeFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>standeeUrl.value=v.target.result;r.readAsDataURL(f);} };
+        const handleStandeeFile = async (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            try {
+                standeeUrl.value = await imageFileToDataUrl(f, { maxSize: 512, mimeType: 'image/png', quality: 0.92 });
+                saveState();
+            } catch (err) {
+                console.error('Standee load failed', err);
+            }
+        };
         const uploadWallpaper = () => wallpaperInput.value.click();
-        const handleWallpaperFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>wallpaperUrl.value=v.target.result;r.readAsDataURL(f);} };
+        const handleWallpaperFile = async (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            try {
+                wallpaperUrl.value = await imageFileToDataUrl(f, { maxSize: 1600, mimeType: 'image/jpeg', quality: 0.85 });
+                saveState();
+            } catch (err) {
+                console.error('Wallpaper load failed', err);
+            }
+        };
         const uploadChatWallpaper = () => chatWallpaperInput.value.click();
-        const handleChatWallpaperFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>chatWallpaperUrl.value=v.target.result;r.readAsDataURL(f);} };
+        const handleChatWallpaperFile = async (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            try {
+                chatWallpaperUrl.value = await imageFileToDataUrl(f, { maxSize: 1600, mimeType: 'image/jpeg', quality: 0.85 });
+                saveState();
+            } catch (err) {
+                console.error('Chat wallpaper load failed', err);
+            }
+        };
         const spinAction = () => { if(!spinning.value){spinning.value=true;setTimeout(()=>spinning.value=false,1500);} };
         
         onMounted(() => {
