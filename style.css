@@ -231,6 +231,8 @@ html, body {
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: 14px;
     color: #fff; padding: 0 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none; outline: none; font-size: 15px;
 }
 
@@ -872,6 +874,8 @@ body.text-dark .glass-toggle.active .glass-toggle-handle {
     border-radius: 14px;
     color: #fff;
     padding: 0 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
     outline: none;
     font-size: 15px;
