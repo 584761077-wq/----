@@ -160,12 +160,28 @@
         <div class="nav-bar">
             <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i></div>
             <span>消息</span>
-            <div style="width: 60px;"></div> <!-- 占位符 -->
+            <div style="width: 60px;"></div> <!-- 占位符保持标题居中 -->
         </div>
         <div class="settings-content">
             <!-- 聊天列表 -->
             <div v-if="currentChatTab === 'chat'">
-                <!-- 空的聊天列表 -->
+                <div class="liquid-card contact-card" v-for="contact in contacts" :key="contact.id" @click="openChat(contact)">
+                    <div class="contact-avatar"></div>
+                    <div class="contact-info">
+                        <div class="contact-name">{{ contact.name }}</div>
+                        <div class="contact-last-message" v-if="messages[contact.id] && messages[contact.id].length > 0">
+                            {{ messages[contact.id][messages[contact.id].length - 1].text }}
+                        </div>
+                        <div class="contact-last-message" v-else style="color: rgba(255,255,255,0.4); font-style: italic;">
+                            暂无消息
+                        </div>
+                    </div>
+                </div>
+                <div v-if="contacts.length === 0" class="empty-state">
+                    <i class="fas fa-comment-slash" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <div style="font-size: 14px; color: rgba(255,255,255,0.6);">暂无联系人</div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 5px;">点击下方通讯录添加角色</div>
+                </div>
             </div>
             <!-- 通讯录 -->
             <div v-if="currentChatTab === 'contacts'">
@@ -173,7 +189,7 @@
                     <div class="capsule-btn" @click="showAddRoleModal = true"><i class="fas fa-user-plus"></i></div>
                     <div class="capsule-btn"><i class="fas fa-users"></i></div>
                 </div>
-                <div class="liquid-card contact-card" v-for="contact in contacts" :key="contact.id">
+                <div class="liquid-card contact-card" v-for="contact in contacts" :key="contact.id" @click="openChat(contact)">
                     <div class="contact-avatar"></div>
                     <div class="contact-info">
                         <div class="contact-name">{{ contact.name }}</div>
@@ -188,6 +204,131 @@
             <div class="chat-dock-item" :class="{ active: currentChatTab === 'contacts' }" @click="switchChatTab('contacts')"><i class="fas fa-address-book"></i></div>
             <div class="chat-dock-item" :class="{ active: currentChatTab === 'discover' }" @click="switchChatTab('discover')"><i class="fas fa-compass"></i></div>
             <div class="chat-dock-item" :class="{ active: currentChatTab === 'me' }" @click="switchChatTab('me')"><i class="fas fa-user"></i></div>
+        </div>
+    </div>
+
+    <!-- 6. Conversation View -->
+    <div class="conversation-view" :class="{ active: currentView === 'conversation' }">
+        <div class="conversation-header">
+            <div class="back-btn" @click="switchView('chat')"><i class="fas fa-chevron-left"></i></div>
+            <div class="contact-name">{{ currentConversation.name }}</div>
+            <div class="actions">
+                <i class="fas fa-video"></i>
+                <i class="fas fa-phone"></i>
+                <i class="fas fa-cog" @click="openChatSettings" style="cursor: pointer;"></i>
+            </div>
+        </div>
+        <div class="messages-area">
+            <div v-for="msg in messages[currentConversation.id] || []" :key="msg.time" class="message-bubble" :class="msg.type">
+                {{ msg.text }}
+                <div class="timestamp">{{ msg.time }}</div>
+            </div>
+        </div>
+        <div class="conversation-input-area">
+            <div class="icon-btn"><i class="fas fa-plus"></i></div>
+            <input type="text" class="text-input" placeholder="输入消息..." v-model="newMessage" @keyup.enter="sendMessage">
+            <div class="icon-btn send-btn" @click="sendMessage"><i class="fas fa-arrow-up"></i></div>
+        </div>
+    </div>
+
+    <!-- 7. Chat Settings View -->
+    <div class="settings-view" :class="{ 'active': currentView === 'chat-settings' }">
+        <div class="nav-bar">
+            <div class="nav-btn" @click="switchView('chat')"><i class="fas fa-chevron-left"></i> 返回</div>
+            <span>聊天设置</span>
+            <div class="glass-btn-top" @click="saveChatSettings">保存</div>
+        </div>
+        <div class="settings-content">
+            <!-- 卡片1: 角色信息 -->
+            <div class="liquid-card">
+                <div class="card-title">角色信息</div>
+                <div class="role-info-container">
+                    <!-- Char信息 -->
+                    <div class="role-section">
+                        <div class="role-header">角色 (Char)</div>
+                        <div class="avatar-container" @click="openAvatarModal('char')">
+                            <div class="avatar-circle" :style="{ backgroundImage: currentChatSettings.char.avatar ? `url(${currentChatSettings.char.avatar})` : 'none', backgroundColor: currentChatSettings.char.avatar ? 'transparent' : 'rgba(255,255,255,0.2)' }">
+                                <i v-if="!currentChatSettings.char.avatar" class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">真名</label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.char.realName" placeholder="输入角色真名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">备注名</label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.char.nickname" placeholder="输入备注名">
+                        </div>
+                    </div>
+                    
+                    <!-- User信息 -->
+                    <div class="role-section">
+                        <div class="role-header">用户 (User)</div>
+                        <div class="avatar-container" @click="openAvatarModal('user')">
+                            <div class="avatar-circle" :style="{ backgroundImage: currentChatSettings.user.avatar ? `url(${currentChatSettings.user.avatar})` : 'none', backgroundColor: currentChatSettings.user.avatar ? 'transparent' : 'rgba(255,255,255,0.2)' }">
+                                <i v-if="!currentChatSettings.user.avatar" class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">真名</label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.user.realName" placeholder="输入用户真名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">备注名</label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.user.nickname" placeholder="输入备注名">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 卡片2: Char人设 -->
+            <div class="liquid-card">
+                <div class="card-title">角色人设</div>
+                <div class="form-group">
+                    <label class="form-label">角色人设</label>
+                    <textarea class="glass-textarea" v-model="currentChatSettings.char.personality" placeholder="输入角色的人设描述..." rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">世界书选择绑定</label>
+                    <select class="glass-select" v-model="currentChatSettings.worldbook">
+                        <option value="">未选择</option>
+                        <option value="worldbook1">世界书1</option>
+                        <option value="worldbook2">世界书2</option>
+                        <option value="worldbook3">世界书3</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 卡片3: User人设 -->
+            <div class="liquid-card">
+                <div class="card-title">用户人设</div>
+                <div class="form-group">
+                    <label class="form-label">用户人设</label>
+                    <textarea class="glass-textarea" v-model="currentChatSettings.user.personality" placeholder="输入用户的人设描述..." rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">预设管理</label>
+                    <div class="row-group">
+                        <select class="glass-select" v-model="selectedUserPresetId" @change="loadUserPreset">
+                            <option value="" disabled>选择预设...</option>
+                            <option v-for="(preset, index) in userPresets" :key="index" :value="index">{{ preset.name }}</option>
+                        </select>
+                        <div class="glass-btn" @click="applyUserPreset">
+                            <i class="fas fa-check" style="margin-right:6px"></i> 应用
+                        </div>
+                    </div>
+                    
+                    <div class="preset-action-row">
+                        <div class="rect-btn btn-white" @click="openSaveUserPresetModal">
+                            <i class="fas fa-save" style="margin-right:6px"></i> 保存为预设
+                        </div>
+                        <div class="rect-btn btn-gray" @click="openDeleteUserPresetModal">
+                            <i class="fas fa-trash" style="margin-right:6px"></i> 删除预设
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -221,6 +362,62 @@
             <div class="modal-actions">
                 <div class="glass-btn" @click="showDeleteModal = false">取消</div>
                 <div class="glass-btn" style="background: rgba(255,59,48,0.4);" @click="confirmDeletePreset">删除</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 头像上传模态框 -->
+    <div class="modal-overlay" :class="{ 'show': showAvatarModal }">
+        <div class="modal-box" style="width: 320px;">
+            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">设置头像</div>
+            
+            <div class="form-group">
+                <label class="form-label">头像URL</label>
+                <input type="text" class="glass-input" v-model="avatarUrlInput" placeholder="输入图片URL">
+            </div>
+            
+            <div style="text-align: center; margin: 15px 0; color: rgba(255,255,255,0.6); font-size: 14px;">或</div>
+            
+            <div class="form-group">
+                <label class="form-label">上传本地图片</label>
+                <div class="glass-btn" @click="triggerAvatarFileInput" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-upload" style="margin-right:6px"></i> 选择图片
+                </div>
+                <input type="file" ref="avatarFileInput" accept="image/*" style="display:none" @change="handleAvatarFile">
+            </div>
+            
+            <div v-if="avatarPreviewUrl" class="avatar-preview-container" style="margin: 20px 0;">
+                <div class="avatar-preview-label">预览</div>
+                <div class="avatar-circle-preview" :style="{ backgroundImage: `url(${avatarPreviewUrl})` }"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <div class="glass-btn" @click="cancelAvatarModal">取消</div>
+                <div class="glass-btn" style="background: rgba(255,255,255,0.3);" @click="confirmAvatarChange">确认</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User预设保存模态框 -->
+    <div class="modal-overlay" :class="{ 'show': showSaveUserPresetModal }">
+        <div class="modal-box">
+            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">保存用户人设预设</div>
+            <input type="text" class="glass-input" v-model="newUserPresetName" placeholder="输入预设名称..." style="margin-bottom:10px;">
+            <div class="modal-actions">
+                <div class="glass-btn" @click="showSaveUserPresetModal = false">取消</div>
+                <div class="glass-btn" style="background: rgba(255,255,255,0.3);" @click="confirmSaveUserPreset">确认</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User预设删除模态框 -->
+    <div class="modal-overlay" :class="{ 'show': showDeleteUserPresetModal }">
+        <div class="modal-box">
+            <div class="modal-title" style="margin-bottom:10px; font-weight:600;">确认删除预设</div>
+            <div style="font-size:13px; color:#ccc; margin-bottom:20px;">{{ userPresets[selectedUserPresetId]?.name }}</div>
+            <div class="modal-actions">
+                <div class="glass-btn" @click="showDeleteUserPresetModal = false">取消</div>
+                <div class="glass-btn" style="background: rgba(255,59,48,0.4);" @click="confirmDeleteUserPreset">删除</div>
             </div>
         </div>
     </div>

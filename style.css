@@ -528,3 +528,468 @@ body.text-dark .glass-toggle.active .glass-toggle-handle {
     margin-top: 4px;
     font-style: italic;
 }
+
+.contact-last-message {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+}
+
+/* --- Conversation View (WhatsApp Style) --- */
+.conversation-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #EFEAE2; /* WhatsApp a like background */
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-out;
+    transform: translateX(100%);
+}
+.conversation-view.active {
+    transform: translateX(0);
+}
+
+.conversation-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    padding-top: calc(env(safe-area-inset-top) + 10px);
+    background-color: #F6F6F6;
+    border-bottom: 1px solid #E0E0E0;
+    flex-shrink: 0;
+}
+.conversation-header .back-btn {
+    font-size: 22px;
+    color: #007AFF;
+    cursor: pointer;
+    padding: 0 10px;
+}
+.conversation-header .contact-name {
+    font-weight: 600;
+    font-size: 17px;
+    color: #000;
+    text-align: center;
+    flex-grow: 1;
+}
+.conversation-header .actions {
+    display: flex;
+    gap: 20px;
+    font-size: 20px;
+    color: #007AFF;
+}
+
+.messages-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 18px;
+    margin-bottom: 8px;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.message-bubble.sent {
+    background-color: #E1FEC6;
+    align-self: flex-end;
+    border-top-right-radius: 8px;
+}
+
+.message-bubble.received {
+    background-color: #FFFFFF;
+    align-self: flex-start;
+    border-top-left-radius: 8px;
+}
+
+.message-bubble .timestamp {
+    font-size: 11px;
+    color: #888;
+    float: right;
+    margin-top: 5px;
+    margin-left: 10px;
+    clear: both;
+}
+
+.conversation-input-area {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+    background-color: #F6F6F6;
+    border-top: 1px solid #E0E0E0;
+    flex-shrink: 0;
+}
+.conversation-input-area .icon-btn {
+    font-size: 24px;
+    color: #8E8E93;
+    padding: 5px;
+}
+.conversation-input-area .text-input {
+    flex-grow: 1;
+    height: 40px;
+    border-radius: 20px;
+    border: 1px solid #DDD;
+    padding: 0 15px;
+    font-size: 16px;
+    margin: 0 8px;
+}
+.conversation-input-area .send-btn {
+    font-size: 24px;
+    color: #007AFF;
+    padding: 5px;
+}
+
+/* --- Chat Settings View Styles --- */
+
+/* 角色信息容器 */
+.role-info-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.role-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.role-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 圆形头像样式 */
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.avatar-circle:hover {
+    border-color: rgba(255,255,255,0.5);
+    transform: scale(1.05);
+}
+
+.avatar-circle:active {
+    transform: scale(0.95);
+}
+
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-circle .avatar-placeholder {
+    font-size: 24px;
+    color: rgba(255,255,255,0.5);
+}
+
+.avatar-circle .edit-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 10px;
+    padding: 4px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.avatar-circle:hover .edit-overlay {
+    opacity: 1;
+}
+
+/* 角色名称样式 */
+.role-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.role-nickname {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+}
+
+/* 文本区域样式 */
+.glass-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    padding: 14px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    resize: vertical;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    line-height: 1.4;
+}
+
+.glass-textarea:focus {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.glass-textarea::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+/* 头像上传模态框样式 */
+.avatar-preview-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.avatar-circle-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.avatar-circle-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-circle-preview .avatar-placeholder {
+    font-size: 32px;
+    color: rgba(255,255,255,0.5);
+}
+
+.avatar-upload-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.avatar-url-input {
+    width: 100%;
+    height: 46px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 0 14px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+
+.avatar-url-input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.avatar-file-btn {
+    width: 100%;
+    height: 46px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 8px;
+}
+
+.avatar-file-btn:active {
+    background: rgba(255,255,255,0.3);
+    transform: scale(0.98);
+}
+
+/* 预设管理样式 */
+.preset-select-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.preset-select {
+    flex: 1;
+    height: 46px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    color: #fff;
+    padding: 0 14px;
+    appearance: none;
+    outline: none;
+    font-size: 15px;
+}
+
+.preset-apply-btn {
+    height: 46px;
+    padding: 0 18px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.preset-apply-btn:active {
+    background: rgba(255,255,255,0.3);
+    transform: scale(0.98);
+}
+
+.preset-management-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.preset-save-btn, .preset-delete-btn {
+    flex: 1;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.preset-save-btn {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+.preset-delete-btn {
+    background: rgba(255, 59, 48, 0.25);
+    border: 1px solid rgba(255, 59, 48, 0.5);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.preset-save-btn:active, .preset-delete-btn:active {
+    transform: scale(0.96);
+    filter: brightness(1.1);
+}
+
+/* 预设保存模态框样式 */
+.preset-name-input {
+    width: 100%;
+    height: 46px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 0 14px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.preset-name-input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+/* 暗色文本模式适配 */
+body.text-dark .role-name,
+body.text-dark .role-nickname,
+body.text-dark .role-label,
+body.text-dark .glass-textarea,
+body.text-dark .preset-select,
+body.text-dark .preset-apply-btn,
+body.text-dark .preset-save-btn,
+body.text-dark .preset-delete-btn,
+body.text-dark .avatar-url-input,
+body.text-dark .avatar-file-btn {
+    color: #000 !important;
+}
+
+body.text-dark .glass-textarea,
+body.text-dark .preset-select,
+body.text-dark .avatar-url-input {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(0,0,0,0.2);
+    color: #000;
+}
+
+body.text-dark .glass-textarea::placeholder,
+body.text-dark .avatar-url-input::placeholder,
+body.text-dark .preset-name-input::placeholder {
+    color: rgba(0,0,0,0.4) !important;
+}
+
+body.text-dark .avatar-circle,
+body.text-dark .avatar-circle-preview {
+    background: rgba(0,0,0,0.1);
+    border-color: rgba(0,0,0,0.3);
+}
+
+body.text-dark .avatar-circle .avatar-placeholder,
+body.text-dark .avatar-circle-preview .avatar-placeholder {
+    color: rgba(0,0,0,0.3);
+}
+
+body.text-dark .role-nickname {
+    color: rgba(0,0,0,0.6);
+}
+
+body.text-dark .role-label {
+    color: rgba(0,0,0,0.5);
+}
