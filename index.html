@@ -17,11 +17,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body :class="{ 'settings-active': currentView === 'settings' || currentView === 'appearance' || currentView === 'chat' }">
+<body :class="[{ 'settings-active': currentView === 'settings' || currentView === 'appearance' || currentView === 'chat' }, { 'text-dark': isDarkText }]">
 
 <div id="app">
     
     <div class="wallpaper-layer" :style="{ backgroundImage: `url(${wallpaperUrl})` }"></div>
+    <div class="wallpaper-layer" :style="{ backgroundImage: `url(${chatWallpaperUrl})`, zIndex: currentView === 'chat' ? -1 : -3 }"></div>
     <div class="settings-bg"></div>
 
     <!-- 1. 桌面 -->
@@ -135,6 +136,21 @@
                     <div v-if="!wallpaperUrl" class="wallpaper-preview-placeholder">点击更换壁纸</div>
                 </div>
                 <input type="file" ref="wallpaperInput" accept="image/*" style="display:none" @change="handleWallpaperFile">
+            </div>
+            <div class="liquid-card">
+                <div class="card-title">Chat App 背景</div>
+                <div class="wallpaper-preview" :style="{ backgroundImage: `url(${chatWallpaperUrl})` }" @click="uploadChatWallpaper">
+                    <div v-if="!chatWallpaperUrl" class="wallpaper-preview-placeholder">点击更换壁纸</div>
+                </div>
+                <input type="file" ref="chatWallpaperInput" accept="image/*" style="display:none" @change="handleChatWallpaperFile">
+            </div>
+            <div class="liquid-card">
+                <div class="setting-row">
+                    <span class="setting-label">全局字体黑色</span>
+                    <div class="glass-toggle" :class="{ active: isDarkText }" @click="isDarkText = !isDarkText">
+                        <div class="glass-toggle-handle"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

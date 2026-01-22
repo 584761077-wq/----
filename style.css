@@ -10,9 +10,10 @@
 
 * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
         
-        html, body {
+html, body {
             margin: 0; padding: 0;
-            height: 100%;
+            height: 100%; /* Fallback for older browsers */
+            height: 100dvh; /* Dynamic viewport height */
             width: 100%;
             overflow: hidden; /* 彻底禁止滚动 */
             position: fixed; /* 固定视口 */
@@ -31,7 +32,9 @@
 
 /* --- 背景层 --- */
 .wallpaper-layer {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0; width: 100%; 
+    height: 100%; /* Fallback */
+    height: 100dvh; /* Dynamic viewport height */
     background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
     background-size: cover; background-position: center;
     z-index: -2; transition: filter 0.4s;
@@ -360,6 +363,113 @@
 }
 .chat-dock-item.active {
     color: #000;
+}
+
+.glass-toggle {
+    width: 52px;
+    height: 32px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+}
+
+.glass-toggle.active {
+    background: #fff;
+}
+
+.glass-toggle-handle {
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.glass-toggle.active .glass-toggle-handle {
+    transform: translateX(20px);
+    background: #eee;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-label {
+    font-size: 16px;
+    color: #fff;
+}
+
+/* --- Dark Text Mode --- */
+body.text-dark {
+    --text-primary: #1c1c1e;
+    --glass-card: rgba(255, 255, 255, 0.5);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+body.text-dark .liquid-card,
+body.text-dark .capsule-btn {
+    color: #000;
+}
+
+body.text-dark .card-title,
+body.text-dark .form-label {
+    color: rgba(0,0,0,0.5) !important;
+    text-shadow: none;
+}
+
+body.text-dark .setting-label,
+body.text-dark .chat-name,
+body.text-dark .contact-name,
+body.text-dark .nav-bar span,
+body.text-dark .nav-btn,
+body.text-dark .glass-btn,
+body.text-dark .glass-input,
+body.text-dark .glass-select,
+body.text-dark .glass-btn-top {
+    color: #000 !important;
+    text-shadow: none;
+}
+
+body.text-dark .glass-input::placeholder {
+    color: rgba(0,0,0,0.4) !important;
+}
+
+body.text-dark .chat-preview,
+body.text-dark .contact-signature {
+    color: rgba(0,0,0,0.6) !important;
+}
+
+body.text-dark .icon-settings,
+body.text-dark .icon-appearance,
+body.text-dark .icon-chat {
+    color: #000 !important;
+}
+
+body.text-dark .liquid-card {
+    background: var(--glass-card);
+    border: 1px solid var(--glass-border);
+}
+
+body.text-dark .glass-toggle {
+    border-color: rgba(0,0,0,0.2);
+}
+
+body.text-dark .glass-toggle.active {
+    background: #333;
+}
+
+body.text-dark .glass-toggle.active .glass-toggle-handle {
+    background: #fff;
 }
 
 .contact-actions {

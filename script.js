@@ -8,12 +8,15 @@ createApp({
         const batteryLevel = ref(60); const charging = ref(false); const storagePct = ref(20);
         
         const wallpaperUrl = ref('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+        const chatWallpaperUrl = ref('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2670&auto=format&fit=crop'); // 默认白色背景
         const imgUrl = ref('https://images.unsplash.com/photo-1517423568366-028c4974d016?q=80&w=2670&auto=format&fit=crop'); 
         const standeeUrl = ref('https://cdn-icons-png.flaticon.com/512/9440/9440474.png');
         const spinning = ref(false);
         const fileInput = ref(null); 
         const standeeInput = ref(null);
         const wallpaperInput = ref(null);
+        const chatWallpaperInput = ref(null);
+        const isDarkText = ref(false);
 
         // --- 数据持久化 ---
         const STORAGE_KEY = 'ios26-liquid-settings';
@@ -101,10 +104,12 @@ createApp({
                     apiConfig: apiConfig,
                     presets: presets.value,
                     wallpaperUrl: wallpaperUrl.value,
+                    chatWallpaperUrl: chatWallpaperUrl.value,
                     imgUrl: imgUrl.value,
                     standeeUrl: standeeUrl.value,
                     selectedPresetId: selectedPresetId.value,
-                    contacts: contacts.value
+                    contacts: contacts.value,
+                    isDarkText: isDarkText.value
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
                 console.log("状态已保存。");
@@ -121,10 +126,12 @@ createApp({
                     Object.assign(apiConfig, state.apiConfig);
                     presets.value = state.presets || [];
                     wallpaperUrl.value = state.wallpaperUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
+                    chatWallpaperUrl.value = state.chatWallpaperUrl || 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2670&auto=format&fit=crop';
                     imgUrl.value = state.imgUrl || 'https://images.unsplash.com/photo-1517423568366-028c4974d016?q=80&w=2670&auto=format&fit=crop';
                     standeeUrl.value = state.standeeUrl || 'https://cdn-icons-png.flaticon.com/512/9440/9440474.png';
                     selectedPresetId.value = state.selectedPresetId || '';
                     contacts.value = state.contacts || [];
+                    isDarkText.value = state.isDarkText || false;
                     console.log("状态已加载。");
                 } else {
                     // 如果没有保存的状态，设置一个默认预设
@@ -136,7 +143,7 @@ createApp({
         };
 
         // 监听所有需要持久化的数据
-        watch([apiConfig, presets, wallpaperUrl, imgUrl, standeeUrl, selectedPresetId, contacts], saveState, { deep: true });
+        watch([apiConfig, presets, wallpaperUrl, imgUrl, standeeUrl, selectedPresetId, contacts, chatWallpaperUrl, isDarkText], saveState, { deep: true });
 
 
         // 基础功能
@@ -151,6 +158,8 @@ createApp({
         const handleStandeeFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>standeeUrl.value=v.target.result;r.readAsDataURL(f);} };
         const uploadWallpaper = () => wallpaperInput.value.click();
         const handleWallpaperFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>wallpaperUrl.value=v.target.result;r.readAsDataURL(f);} };
+        const uploadChatWallpaper = () => chatWallpaperInput.value.click();
+        const handleChatWallpaperFile = (e) => { const f=e.target.files[0]; if(f){const r=new FileReader();r.onload=v=>chatWallpaperUrl.value=v.target.result;r.readAsDataURL(f);} };
         const spinAction = () => { if(!spinning.value){spinning.value=true;setTimeout(()=>spinning.value=false,1500);} };
         
         onMounted(() => {
@@ -162,6 +171,8 @@ createApp({
         return { 
             currentView, switchView, hour, minute, fullDate, statusTime, batteryLevel, charging, storagePct,
             wallpaperUrl, wallpaperInput, uploadWallpaper, handleWallpaperFile,
+            chatWallpaperUrl, chatWallpaperInput, uploadChatWallpaper, handleChatWallpaperFile,
+            isDarkText,
             imgUrl, fileInput, uploadImage, handleFile, standeeUrl, standeeInput, uploadStandee, handleStandeeFile, spinning, spinAction,
             apiConfig, modelList, loadingModels, fetchModels, presets, selectedPresetId, loadPreset,
             showSaveModal, newPresetName, openSaveModal, confirmSavePreset, showDeleteModal, openDeleteModal, confirmDeletePreset, saveAndExit,
