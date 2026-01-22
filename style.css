@@ -11,7 +11,8 @@
 * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
         
 html, body {
-    margin: 0; padding: 0;
+    margin: 0; 
+    padding: 0;
     height: 100%; /* Fallback for older browsers */
     height: 100dvh; /* Dynamic viewport height */
     width: 100%;
@@ -19,6 +20,10 @@ html, body {
     position: fixed; /* 固定视口 */
     top: 0;
     left: 0;
+    /* iOS全屏支持 */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
         body {
@@ -33,29 +38,33 @@ html, body {
 /* --- 背景层 --- */
 .wallpaper-layer {
     position: fixed; 
-    top: calc(-1 * env(safe-area-inset-top, 0px));
-    left: calc(-1 * env(safe-area-inset-left, 0px));
-    width: calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
-    height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
-    background-size: cover; background-position: center;
-    z-index: -2; transition: filter 0.4s;
+    background-size: cover; 
+    background-position: center;
+    z-index: -2; 
+    transition: filter 0.4s;
 }
 
 /* 极致液态极光背景 */
 .settings-bg {
     position: fixed;
-    top: calc(-1 * env(safe-area-inset-top, 0px));
-    left: calc(-1 * env(safe-area-inset-left, 0px));
-    width: calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
-    height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: 
         radial-gradient(circle at 0% 0%, rgba(168, 192, 255, 0.8), transparent 50%),
         radial-gradient(circle at 100% 0%, rgba(63, 43, 150, 0.8), transparent 50%),
         radial-gradient(circle at 100% 100%, rgba(63, 43, 150, 0.8), transparent 50%),
         radial-gradient(circle at 0% 100%, rgba(168, 192, 255, 0.8), transparent 50%);
     background-size: 200% 200%;
-    opacity: 0; transition: opacity 0.5s; z-index: -1;
+    opacity: 0; 
+    transition: opacity 0.5s; 
+    z-index: -1;
     filter: blur(40px);
 }
 .settings-active .settings-bg { opacity: 1; animation: aurora 10s ease infinite; }
