@@ -43,7 +43,34 @@
                 <div v-else class="standee-placeholder" @click="uploadStandee"><i class="fas fa-ghost" style="font-size:24px; margin-bottom:5px;"></i><span>上传PNG</span></div>
                 <input type="file" ref="standeeInput" accept="image/png, image/webp" style="display:none" @change="handleStandeeFile">
             </div>
-            <div class="widget-small"></div>
+            <div class="widget-small">
+                <div class="icon-grid">
+                    <div class="icon-item">
+                        <div class="icon-square">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="app-name">贴贴</div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-square">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="app-name">世界书</div>
+                    </div>
+                    <div class="icon-item">
+                        <div class="icon-square">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="app-name">记忆宫殿</div>
+                    </div>
+                    <div class="icon-item placeholder">
+                        <div class="icon-square">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="app-name">添加</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

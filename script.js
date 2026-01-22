@@ -129,11 +129,32 @@ createApp({
 
         const confirmAddRole = () => {
             if (!newRoleName.value.trim()) return;
+            const contactId = Date.now();
             contacts.value.push({
-                id: Date.now(),
+                id: contactId,
                 name: newRoleName.value,
+                realName: newRoleName.value, // 将输入的名称同时作为真名
+                nickname: '', // 初始时备注名为空
                 signature: '这个人很懒，什么都没留下...'
             });
+            
+            // 为新联系人初始化聊天设置
+            chatSettings[contactId] = {
+                char: {
+                    avatar: '',
+                    realName: newRoleName.value, // 将输入的名称设置为char真名
+                    nickname: '', // 初始时备注名为空
+                    personality: '这是一个Char的人设描述...'
+                },
+                user: {
+                    avatar: '',
+                    realName: 'User',
+                    nickname: 'User昵称',
+                    personality: '这是一个User的人设描述...'
+                },
+                worldbook: 'default'
+            };
+            
             newRoleName.value = '';
             showAddRoleModal.value = false;
         };
@@ -337,11 +358,12 @@ createApp({
 
         // 同步头像到通讯录和消息列表
         const syncAvatarToContacts = (target, avatarUrl) => {
-            const targetName = target === 'char' ? currentChatSettings.char.realName : currentChatSettings.user.realName;
+            const contactId = currentConversation.value.id;
+            if (!contactId) return;
             
             // 更新通讯录中对应的联系人
             contacts.value.forEach(contact => {
-                if (contact.name === targetName) {
+                if (contact.id === contactId) {
                     contact.avatar = avatarUrl;
                 }
             });
@@ -349,14 +371,38 @@ createApp({
             // 注意：消息列表中的头像通常通过联系人数据获取，所以更新通讯录即可
         };
 
+        // 同步真名到通讯录
+        const syncRealNameToContacts = (target) => {
+            const contactId = currentConversation.value.id;
+            if (!contactId) return;
+            
+            const realName = target === 'char' ? currentChatSettings.char.realName : currentChatSettings.user.realName;
+            
+            // 更新通讯录中对应的联系人
+            contacts.value.forEach(contact => {
+                if (contact.id === contactId) {
+                    contact.realName = realName;
+                    // 如果备注名为空，则同时更新显示名称
+                    if (!contact.nickname) {
+                        contact.name = realName;
+                    }
+                }
+            });
+        };
+
         // 同步备注到通讯录
         const syncNicknameToContacts = (target) => {
-            const targetName = target === 'char' ? currentChatSettings.char.realName : currentChatSettings.user.realName;
+            const contactId = currentConversation.value.id;
+            if (!contactId) return;
+            
             const nickname = target === 'char' ? currentChatSettings.char.nickname : currentChatSettings.user.nickname;
             
+            // 更新通讯录中对应的联系人
             contacts.value.forEach(contact => {
-                if (contact.name === targetName) {
+                if (contact.id === contactId) {
                     contact.nickname = nickname;
+                    // 优先显示备注名，如果没有备注名则显示真名
+                    contact.name = nickname || contact.realName || contact.name;
                 }
             });
         };
@@ -369,9 +415,9 @@ createApp({
                 Object.assign(chatSettings[contactId], currentChatSettings);
             }
             
-            // 同步备注到通讯录
+            // 只同步char（角色）的信息到通讯录，user（用户）的信息不应该同步到联系人
+            syncRealNameToContacts('char');
             syncNicknameToContacts('char');
-            syncNicknameToContacts('user');
             
             // 保存状态
             saveState();
