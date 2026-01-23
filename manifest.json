@@ -2,13 +2,13 @@
   "name": "iOS 26 Liquid Real API",
   "short_name": "iOS 26",
   "description": "iOS风格液态玻璃UI的API设置和聊天应用",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "display_override": ["fullscreen", "standalone"],
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "./",
   "lang": "zh-CN",
   "icons": [
     {

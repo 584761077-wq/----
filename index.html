@@ -37,14 +37,13 @@
                 <div class="module mod-storage"><div class="ring-container" :style="{ '--pct': storagePct + '%' }"><div class="ring-inner">存储</div></div></div>
                 <div class="module mod-battery"><div class="liquid" :style="{ height: batteryLevel + '%' }"></div><div class="battery-info"><i class="fas fa-bolt" v-if="charging"></i><span>{{ batteryLevel }}</span></div></div>
             </div>
-            <div class="right-visual" @click="uploadImage"><img v-if="imgUrl" :src="imgUrl"><div v-else class="placeholder"><i class="fas fa-image"></i></div><input type="file" ref="fileInput" accept="image/*" style="display:none" @change="handleFile"></div>
+            <div class="right-visual" @click="uploadImage"><img v-if="imgUrl" :src="imgUrl"><div v-else class="placeholder"><i class="fas fa-image"></i></div></div>
         </div>
         <div class="widget-row">
             <div class="widget-small standee-widget">
                 <div class="hidden-trigger" @click.stop="uploadStandee"></div>
                 <template v-if="standeeUrl"><img :src="standeeUrl" class="standee-img" :class="{ 'is-spinning': spinning }" @click="spinAction"><div class="base-slot"></div><div class="metal-base"></div></template>
                 <div v-else class="standee-placeholder" @click="uploadStandee"><i class="fas fa-ghost" style="font-size:24px; margin-bottom:5px;"></i><span>上传PNG</span></div>
-                <input type="file" ref="standeeInput" accept="image/png, image/webp" style="display:none" @change="handleStandeeFile">
             </div>
             <div class="widget-small">
                 <div class="icon-grid">
@@ -165,14 +164,12 @@
                 <div class="wallpaper-preview" :style="{ backgroundImage: `url(${wallpaperUrl})` }" @click="uploadWallpaper">
                     <div v-if="!wallpaperUrl" class="wallpaper-preview-placeholder">点击更换壁纸</div>
                 </div>
-                <input type="file" ref="wallpaperInput" accept="image/*" style="display:none" @change="handleWallpaperFile">
             </div>
             <div class="liquid-card">
                 <div class="card-title">Chat App 背景</div>
                 <div class="wallpaper-preview" :style="{ backgroundImage: `url(${chatWallpaperUrl})` }" @click="uploadChatWallpaper">
                     <div v-if="!chatWallpaperUrl" class="wallpaper-preview-placeholder">点击更换壁纸</div>
                 </div>
-                <input type="file" ref="chatWallpaperInput" accept="image/*" style="display:none" @change="handleChatWallpaperFile">
             </div>
             <div class="liquid-card">
                 <div class="setting-row">
@@ -413,7 +410,6 @@
                 <div class="glass-btn" @click="triggerAvatarFileInput" style="width: 100%; justify-content: center;">
                     <i class="fas fa-upload" style="margin-right:6px"></i> 选择图片
                 </div>
-                <input type="file" ref="avatarFileInput" accept="image/*" style="display:none" @change="handleAvatarFile">
             </div>
             
             <div v-if="avatarPreviewUrl" class="avatar-preview-container" style="margin: 20px 0;">
@@ -451,6 +447,13 @@
             </div>
         </div>
     </div>
+
+    <!-- Hidden file inputs kept at root to avoid view teardown -->
+    <input type="file" ref="fileInput" accept="image/*" style="display:none" @change="handleFile">
+    <input type="file" ref="standeeInput" accept="image/png, image/webp" style="display:none" @change="handleStandeeFile">
+    <input type="file" ref="wallpaperInput" accept="image/*" style="display:none" @change="handleWallpaperFile">
+    <input type="file" ref="chatWallpaperInput" accept="image/*" style="display:none" @change="handleChatWallpaperFile">
+    <input type="file" ref="avatarFileInput" accept="image/*" style="display:none" @change="handleAvatarFile">
 
 </div>
 

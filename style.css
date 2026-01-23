@@ -586,6 +586,7 @@ body.text-dark .glass-toggle.active .glass-toggle-handle {
     z-index: 300;
     display: flex;
     flex-direction: column;
+    padding-top: env(safe-area-inset-top);
     transition: transform 0.3s ease-out;
     transform: translateX(100%);
 }
@@ -597,7 +598,6 @@ body.text-dark .glass-toggle.active .glass-toggle-handle {
     display: flex;
     align-items: center;
     padding: 10px;
-    padding-top: calc(env(safe-area-inset-top) + 10px);
     background-color: #F6F6F6;
     border-bottom: 1px solid #E0E0E0;
     flex-shrink: 0;
