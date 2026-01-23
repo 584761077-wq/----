@@ -25,7 +25,7 @@
 <div id="app">
     
     <div class="wallpaper-layer" :style="{ backgroundImage: `url(${wallpaperUrl})` }"></div>
-    <div class="wallpaper-layer" :style="{ backgroundImage: `url(${chatWallpaperUrl})`, zIndex: currentView === 'chat' ? -1 : -3 }"></div>
+    <div class="wallpaper-layer" :style="{ backgroundImage: `url(${chatWallpaperUrl})`, opacity: currentView === 'chat' ? 1 : 0, zIndex: currentView === 'chat' ? 1 : 0 }"></div>
     <div class="settings-bg"></div>
 
     <!-- 1. 桌面 -->
@@ -57,7 +57,7 @@
                         <div class="icon-square">
                             <i class="fas fa-book"></i>
                         </div>
-                        <div class="app-name">世界书</div>
+                        <div class="app-name">世界�?/div>
                     </div>
                     <div class="icon-item">
                         <div class="icon-square">
@@ -83,7 +83,7 @@
         <div class="app-icon icon-chat" @click="switchView('chat')"><i class="fas fa-comment"></i></div>
     </div>
 
-    <!-- 3. 极致液态设置 -->
+    <!-- 3. 极致液态设�?-->
     <div class="settings-view" :class="{ 'active': currentView === 'settings' }">
         <div class="nav-bar">
             <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i> 返回</div>
@@ -109,7 +109,7 @@
                 <div class="row-group">
                     <div class="glass-btn" @click="fetchModels">
                         <i class="fas fa-sync-alt" :class="{'fa-spin': loadingModels}" style="margin-right:6px"></i> 
-                        {{ loadingModels ? '连接中...' : '拉取模型' }}
+                        {{ loadingModels ? '连接�?..' : '拉取模型' }}
                     </div>
                     <select class="glass-select" v-model="apiConfig.model" style="color:#000;">
                         <option value="" disabled>选择模型...</option>
@@ -156,7 +156,7 @@
         <div class="nav-bar">
             <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i> 返回</div>
             <span>外观</span>
-            <div style="width: 60px;"></div> <!-- 占位符保持标题居中 -->
+            <div style="width: 60px;"></div> <!-- 占位符保持标题居�?-->
         </div>
         <div class="settings-content">
             <div class="liquid-card">
@@ -187,7 +187,7 @@
         <div class="nav-bar">
             <div class="nav-btn" @click="switchView('desktop')"><i class="fas fa-chevron-left"></i></div>
             <span>消息</span>
-            <div style="width: 60px;"></div> <!-- 占位符保持标题居中 -->
+            <div style="width: 60px;"></div> <!-- 占位符保持标题居�?-->
         </div>
         <div class="settings-content">
             <!-- 聊天列表 -->
@@ -206,11 +206,11 @@
                 </div>
                 <div v-if="contacts.length === 0" class="empty-state">
                     <i class="fas fa-comment-slash" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                    <div style="font-size: 14px; color: rgba(255,255,255,0.6);">暂无联系人</div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 5px;">点击下方通讯录添加角色</div>
+                    <div style="font-size: 14px; color: rgba(255,255,255,0.6);">暂无联系�?/div>
+                    <div style="font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 5px;">点击下方通讯录添加角�?/div>
                 </div>
             </div>
-            <!-- 通讯录 -->
+            <!-- 通讯�?-->
             <div v-if="currentChatTab === 'contacts'">
                 <div class="contact-actions">
                     <div class="capsule-btn" @click="showAddRoleModal = true"><i class="fas fa-user-plus"></i></div>
@@ -283,8 +283,8 @@
                             <input type="text" class="glass-input" v-model="currentChatSettings.char.realName" placeholder="输入角色真名">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">备注名</label>
-                            <input type="text" class="glass-input" v-model="currentChatSettings.char.nickname" placeholder="输入备注名">
+                            <label class="form-label">备注�?/label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.char.nickname" placeholder="输入备注�?>
                         </div>
                     </div>
                     
@@ -301,8 +301,8 @@
                             <input type="text" class="glass-input" v-model="currentChatSettings.user.realName" placeholder="输入用户真名">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">备注名</label>
-                            <input type="text" class="glass-input" v-model="currentChatSettings.user.nickname" placeholder="输入备注名">
+                            <label class="form-label">备注�?/label>
+                            <input type="text" class="glass-input" v-model="currentChatSettings.user.nickname" placeholder="输入备注�?>
                         </div>
                     </div>
                 </div>
@@ -313,15 +313,15 @@
                 <div class="card-title">角色人设</div>
                 <div class="form-group">
                     <label class="form-label">角色人设</label>
-                    <textarea class="glass-textarea" v-model="currentChatSettings.char.personality" placeholder="输入角色的人设描述..." rows="4"></textarea>
+                    <textarea class="glass-textarea" v-model="currentChatSettings.char.personality" placeholder="输入角色的人设描�?.." rows="4"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">世界书选择绑定</label>
                     <select class="glass-select" v-model="currentChatSettings.worldbook">
                         <option value="">未选择</option>
-                        <option value="worldbook1">世界书1</option>
-                        <option value="worldbook2">世界书2</option>
-                        <option value="worldbook3">世界书3</option>
+                        <option value="worldbook1">世界�?</option>
+                        <option value="worldbook2">世界�?</option>
+                        <option value="worldbook3">世界�?</option>
                     </select>
                 </div>
             </div>
@@ -331,7 +331,7 @@
                 <div class="card-title">用户人设</div>
                 <div class="form-group">
                     <label class="form-label">用户人设</label>
-                    <textarea class="glass-textarea" v-model="currentChatSettings.user.personality" placeholder="输入用户的人设描述..." rows="4"></textarea>
+                    <textarea class="glass-textarea" v-model="currentChatSettings.user.personality" placeholder="输入用户的人设描�?.." rows="4"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -348,7 +348,7 @@
                     
                     <div class="preset-action-row">
                         <div class="rect-btn btn-white" @click="openSaveUserPresetModal">
-                            <i class="fas fa-save" style="margin-right:6px"></i> 保存为预设
+                            <i class="fas fa-save" style="margin-right:6px"></i> 保存为预�?
                         </div>
                         <div class="rect-btn btn-gray" @click="openDeleteUserPresetModal">
                             <i class="fas fa-trash" style="margin-right:6px"></i> 删除预设
@@ -363,7 +363,7 @@
     <!-- 弹窗 -->
     <div class="modal-overlay" :class="{ 'show': showAddRoleModal }">
         <div class="modal-box">
-            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">添加新角色</div>
+            <div class="modal-title" style="margin-bottom:15px; font-weight:600;">添加新角�?/div>
             <input type="text" class="glass-input" v-model="newRoleName" placeholder="输入角色名字..." style="margin-bottom:10px;">
             <div class="modal-actions">
                 <div class="glass-btn" @click="showAddRoleModal = false">取消</div>
@@ -403,7 +403,7 @@
                 <input type="text" class="glass-input" v-model="avatarUrlInput" placeholder="输入图片URL">
             </div>
             
-            <div style="text-align: center; margin: 15px 0; color: rgba(255,255,255,0.6); font-size: 14px;">或</div>
+            <div style="text-align: center; margin: 15px 0; color: rgba(255,255,255,0.6); font-size: 14px;">�?/div>
             
             <div class="form-group">
                 <label class="form-label">上传本地图片</label>

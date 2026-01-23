@@ -39,7 +39,7 @@ body {
 }
 
 
-        #app { width: 100%; height: 100%; min-height: 100vh; position: relative; overflow: hidden; }
+        #app { width: 100%; height: 100%; min-height: 100vh; position: relative; overflow: hidden; isolation: isolate; }
 
 @supports (height: 100dvh) {
     html, body, #app {
@@ -55,20 +55,23 @@ body {
     }
 }
 
-/* --- 背景层 --- */
+/* --- 背景�?--- */
 .wallpaper-layer {
-    position: fixed; 
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: calc(-1 * env(safe-area-inset-top, 0px));
+    right: calc(-1 * env(safe-area-inset-right, 0px));
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+    left: calc(-1 * env(safe-area-inset-left, 0px));
     background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
     background-size: cover; 
     background-position: center;
-    z-index: -2; 
+    background-repeat: no-repeat;
+    z-index: 0; 
     pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
 }
 
-/* 极致液态极光背景 */
+/* 极致液态极光背�?*/
 .settings-bg {
     position: fixed;
     top: calc(-1 * env(safe-area-inset-top, 0px));
@@ -83,7 +86,7 @@ body {
     background-size: 200% 200%;
     opacity: 0; 
     transition: opacity 0.5s; 
-    z-index: -1;
+    z-index: 1;
     filter: blur(40px);
 }
 .settings-active .settings-bg { opacity: 1; animation: aurora 10s ease infinite; }
@@ -158,7 +161,7 @@ body {
 .icon-appearance { background: linear-gradient(135deg, #f6d365, #fda085); color: #fff; }
 .icon-chat { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #2a5298; }
 
-/* --- 极致液态玻璃设置界面 --- */
+/* --- 极致液态玻璃设置界�?--- */
 .settings-view {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 200;
@@ -173,7 +176,7 @@ body {
 }
 .settings-view.active { opacity: 1; pointer-events: auto; transform: scale(1); }
 
-/* 导航栏 */
+/* 导航�?*/
 .nav-bar {
     height: 50px; display: flex; justify-content: space-between; align-items: center;
     padding: 0 20px; margin-bottom: 10px;
@@ -199,17 +202,17 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 内容区 */
+/* 内容�?*/
 .settings-content { 
     flex: 1; 
     padding: 0 20px 40px 20px; 
     overflow-y: auto; 
     -webkit-overflow-scrolling: touch; 
-    /* 确保内容区不会意外滚动 */
+    /* 确保内容区不会意外滚�?*/
     overscroll-behavior-y: contain;
 }
 
-/* 液态卡片 */
+/* 液态卡�?*/
 .liquid-card {
     background: var(--glass-card);
     backdrop-filter: blur(50px) saturate(180%);
@@ -265,7 +268,7 @@ body {
     appearance: none; outline: none; font-size: 15px;
 }
 
-/* 预设按钮组 (双列) */
+/* 预设按钮�?(双列) */
 .preset-action-row {
     display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     margin-top: 15px; margin-bottom: 20px;
@@ -1097,7 +1100,7 @@ body.text-dark .role-label {
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* 占位符样式 */
+/* 占位符样�?*/
 .icon-item.placeholder .icon-square i {
     color: rgba(255, 255, 255, 0.7);
 }
